@@ -1,0 +1,208 @@
+/* Hollyscapes — design tokens and base styles.
+   Palette balance rule: sage is the canvas, cream is relief. */
+
+:root {
+  /* Palette — raw */
+  --sage-field: #869A66;
+  --sage-deep: #4F5C3A;
+  --sage-light: #D3DCBF;
+  --cream-parchment: #F7F3EA;
+  --cream-soft: #FCFAF4;
+  --clay: #C0734F;
+  --clay-deep: #A55E3D;
+  --bark: #3F392F;
+  --bark-soft: #5A5346;
+
+  /* Semantic surfaces */
+  --surface-canvas: var(--sage-field);
+  --surface-canvas-deep: var(--sage-deep);
+  --surface-canvas-light: var(--sage-light);
+  --surface-relief: var(--cream-parchment);
+  --surface-card: var(--cream-soft);
+
+  /* Semantic text */
+  --text-on-sage: var(--cream-parchment);
+  --text-on-sage-muted: rgba(247, 243, 234, 0.78);
+  --text-on-cream: var(--bark);
+  --text-on-cream-muted: var(--bark-soft);
+
+  /* Accent */
+  --accent: var(--clay);
+  --accent-hover: var(--clay-deep);
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Shadows — soft, low, never harsh */
+  --shadow-soft: 0 2px 8px rgba(63, 57, 47, 0.06), 0 8px 24px rgba(63, 57, 47, 0.08);
+  --shadow-card: 0 1px 2px rgba(63, 57, 47, 0.05), 0 12px 32px rgba(63, 57, 47, 0.10);
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --space-10: 8rem;
+
+  /* Layout */
+  --container-max: 1140px;
+  --measure: 65ch;
+
+  /* Type */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-body: "Mulish", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --leading-body: 1.65;
+  --leading-heading: 1.15;
+}
+
+/* Modern reset */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  /* Default sage so any unstyled space still reads green. */
+  background: var(--surface-canvas-light);
+  color: var(--text-on-cream);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: var(--leading-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+img, picture, svg, video { display: block; max-width: 100%; height: auto; }
+input, button, textarea, select { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); }
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: var(--leading-heading);
+  letter-spacing: -0.005em;
+  /* Soft optical settings for Fraunces. */
+  font-variation-settings: "SOFT" 100, "opsz" 144;
+  color: inherit;
+}
+h1 { font-size: clamp(2.4rem, 5vw + 1rem, 4.5rem); font-weight: 400; }
+h2 { font-size: clamp(1.8rem, 2.6vw + 0.8rem, 2.8rem); }
+h3 { font-size: clamp(1.25rem, 1vw + 1rem, 1.5rem); }
+p { max-width: var(--measure); }
+
+/* Layout primitives */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+@media (min-width: 720px) {
+  .container { padding-inline: var(--space-6); }
+}
+
+/* Section bands — apply the palette balance rule.
+   Default text colors match the band so each band is self-contained. */
+.band { padding-block: clamp(var(--space-7), 8vw, var(--space-10)); }
+.band--sage      { background: var(--surface-canvas);       color: var(--text-on-sage); }
+.band--sage-deep { background: var(--surface-canvas-deep);  color: var(--text-on-sage); }
+.band--sage-light{ background: var(--surface-canvas-light); color: var(--text-on-cream); }
+.band--cream     { background: var(--surface-relief);       color: var(--text-on-cream); }
+
+/* Cards float on sage bands to give body copy a comfortable surface. */
+.card {
+  background: var(--surface-card);
+  color: var(--text-on-cream);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: clamp(var(--space-5), 3vw, var(--space-7));
+}
+
+/* CTA button — clay, sparingly used. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--accent);
+  color: var(--cream-parchment);
+  font-family: var(--font-body);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-soft);
+  transition: background 200ms ease, transform 200ms ease;
+}
+.button:hover {
+  background: var(--accent-hover);
+  color: var(--cream-parchment);
+  transform: translateY(-1px);
+}
+.button--ghost-on-sage {
+  background: transparent;
+  color: var(--text-on-sage);
+  border: 1px solid rgba(247, 243, 234, 0.45);
+  box-shadow: none;
+}
+.button--ghost-on-sage:hover { background: rgba(247, 243, 234, 0.10); color: var(--text-on-sage); }
+
+/* Link with arrow */
+.link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-weight: 600;
+  color: var(--accent);
+}
+.link-arrow:hover { color: var(--accent-hover); }
+.band--sage .link-arrow,
+.band--sage-deep .link-arrow { color: var(--text-on-sage); }
+.band--sage .link-arrow:hover,
+.band--sage-deep .link-arrow:hover { color: var(--cream-soft); }
+
+/* Eyebrow label */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  margin-bottom: var(--space-3);
+}
+
+/* Subtle dev-only draft banner */
+.draft-banner {
+  position: fixed;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  z-index: 100;
+  background: var(--clay);
+  color: var(--cream-parchment);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-soft);
+  opacity: 0.85;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

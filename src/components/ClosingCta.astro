@@ -1,0 +1,35 @@
+---
+interface Props {
+  heading: string;
+  body?: string;
+  cta_label: string;
+  cta_href: string;
+}
+const { heading, body, cta_label, cta_href } = Astro.props;
+---
+
+<section class="band band--sage-deep closing">
+  <div class="container closing__inner">
+    <h2>{heading}</h2>
+    {body && <p class="closing__body">{body}</p>}
+    <p class="closing__cta">
+      <a class="button" href={cta_href}>
+        {cta_label}
+        <span aria-hidden="true">→</span>
+      </a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .closing { text-align: center; }
+  .closing__inner { max-width: 44rem; margin-inline: auto; }
+  .closing h2 { color: var(--cream-parchment); margin-inline: auto; }
+  .closing__body {
+    margin-top: var(--space-4);
+    margin-inline: auto;
+    color: var(--text-on-sage);
+    font-size: 1.08rem;
+  }
+  .closing__cta { margin-top: var(--space-6); max-width: none; }
+</style>

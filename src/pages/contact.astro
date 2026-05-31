@@ -1,0 +1,291 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import { getEntry } from "astro:content";
+
+const page = await getEntry("pages", "contact");
+if (!page) throw new Error("Missing pages/contact.md content entry");
+if (page.data.template !== "contact")
+  throw new Error("pages/contact.md must use template: contact");
+
+const site = await getEntry("site", "global");
+if (!site) throw new Error("Missing site/global.md content entry");
+
+const { hero, intro, form, direct_contact, draft } = page.data;
+const contactEmail = site.data.contact_email;
+
+const isPlaceholderEndpoint = form.formspree_endpoint.includes("YOUR_FORM_ID");
+---
+
+<Layout title="Contact" draft={draft}>
+  <PageHero {...hero} />
+
+  {/* Form — cream relief band */}
+  <section class="band band--cream contact-form-band">
+    <div class="container contact-form-band__inner">
+      {intro && (
+        <header class="contact-intro">
+          {intro.heading && <h2>{intro.heading}</h2>}
+          <p>{intro.body}</p>
+        </header>
+      )}
+
+      <article class="card contact-form-card">
+        {isPlaceholderEndpoint && (
+          <p class="contact-form__placeholder-notice" role="status">
+            <strong>For Holly:</strong> the form isn't wired up yet. Replace
+            <code>YOUR_FORM_ID</code> in <code>src/content/pages/contact.md</code>
+            with your Formspree form ID and the form will start delivering to your inbox.
+          </p>
+        )}
+
+        <form
+          class="contact-form"
+          method="POST"
+          action={form.formspree_endpoint}
+          data-formspree-endpoint={form.formspree_endpoint}
+          data-success-message={form.success_message}
+          data-placeholder={isPlaceholderEndpoint ? "true" : "false"}
+          novalidate
+        >
+          <div class="contact-form__field">
+            <label for="contact-name">{form.name_label}</label>
+            <input
+              id="contact-name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              required
+            />
+          </div>
+
+          <div class="contact-form__field">
+            <label for="contact-email">{form.email_label}</label>
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+            />
+          </div>
+
+          <div class="contact-form__field">
+            <label for="contact-message">{form.message_label}</label>
+            <textarea
+              id="contact-message"
+              name="message"
+              rows="6"
+              required
+            ></textarea>
+          </div>
+
+          {/* Honeypot — bots fill this, humans don't see it. */}
+          <div class="contact-form__honeypot" aria-hidden="true">
+            <label for="contact-honey">Leave this empty</label>
+            <input id="contact-honey" name="_gotcha" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="contact-form__actions">
+            <button class="button" type="submit">
+              {form.submit_label}
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <p class="contact-form__status" data-status hidden></p>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  {/* Direct contact — sage band, floating cream card */}
+  <section class="band band--sage direct-contact-band">
+    <div class="container direct-contact-band__inner">
+      <article class="card direct-contact-card">
+        <h2>{direct_contact.heading}</h2>
+        <p class="direct-contact-card__body">{direct_contact.body}</p>
+        <p class="direct-contact-card__email">
+          <a href={`mailto:${contactEmail}`} class="link-arrow">
+            {contactEmail}
+            <span aria-hidden="true">→</span>
+          </a>
+        </p>
+      </article>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>(".contact-form");
+  if (form) {
+    const statusEl = form.querySelector<HTMLParagraphElement>("[data-status]");
+    const isPlaceholder = form.dataset.placeholder === "true";
+    const endpoint = form.dataset.formspreeEndpoint ?? "";
+    const successMessage =
+      form.dataset.successMessage ??
+      "Thank you — your note is on its way.";
+
+    const setStatus = (text: string, tone: "ok" | "warn" | "err") => {
+      if (!statusEl) return;
+      statusEl.textContent = text;
+      statusEl.dataset.tone = tone;
+      statusEl.hidden = false;
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (isPlaceholder) {
+        setStatus(
+          "This form isn't connected to email yet — Holly will switch it on shortly. In the meantime, please reach out by email.",
+          "warn",
+        );
+        return;
+      }
+
+      setStatus("Sending…", "ok");
+      const data = new FormData(form);
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          body: data,
+          headers: { Accept: "application/json" },
+        });
+        if (response.ok) {
+          form.reset();
+          setStatus(successMessage, "ok");
+        } else {
+          setStatus(
+            "Something went wrong on our end. Please try again, or email Holly directly.",
+            "err",
+          );
+        }
+      } catch {
+        setStatus(
+          "Couldn't reach the server. Please try again, or email Holly directly.",
+          "err",
+        );
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-form-band__inner {
+    display: grid;
+    gap: var(--space-7);
+    max-width: 44rem;
+    margin-inline: auto;
+  }
+  .contact-intro { text-align: center; }
+  .contact-intro h2 { margin-bottom: var(--space-3); }
+  .contact-intro p { margin-inline: auto; }
+
+  .contact-form-card { padding: clamp(var(--space-5), 4vw, var(--space-7)); }
+  .contact-form__placeholder-notice {
+    background: rgba(192, 115, 79, 0.08);
+    border: 1px solid rgba(192, 115, 79, 0.3);
+    color: var(--text-on-cream);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    margin-bottom: var(--space-5);
+    max-width: none;
+  }
+  .contact-form__placeholder-notice code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88rem;
+    background: rgba(63, 57, 47, 0.06);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+  .contact-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .contact-form label {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-on-cream-muted);
+  }
+  .contact-form input,
+  .contact-form textarea {
+    background: var(--cream-parchment);
+    border: 1px solid rgba(63, 57, 47, 0.16);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    font-size: 1rem;
+    color: var(--text-on-cream);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    font-family: var(--font-body);
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    outline: none;
+    border-color: var(--sage-field);
+    box-shadow: 0 0 0 3px rgba(134, 154, 102, 0.18);
+  }
+  .contact-form textarea { resize: vertical; min-height: 8rem; }
+
+  .contact-form__honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+
+  .contact-form__actions { margin-top: var(--space-3); }
+
+  .contact-form__status {
+    margin-top: var(--space-2);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    max-width: none;
+  }
+  .contact-form__status[data-tone="ok"] {
+    background: rgba(134, 154, 102, 0.12);
+    border: 1px solid rgba(134, 154, 102, 0.35);
+    color: var(--text-on-cream);
+  }
+  .contact-form__status[data-tone="warn"] {
+    background: rgba(192, 115, 79, 0.10);
+    border: 1px solid rgba(192, 115, 79, 0.35);
+    color: var(--text-on-cream);
+  }
+  .contact-form__status[data-tone="err"] {
+    background: rgba(165, 94, 61, 0.12);
+    border: 1px solid rgba(165, 94, 61, 0.4);
+    color: var(--text-on-cream);
+  }
+
+  /* Direct contact band */
+  .direct-contact-band__inner { display: flex; justify-content: center; }
+  .direct-contact-card {
+    max-width: 40rem;
+    text-align: center;
+  }
+  .direct-contact-card h2 { margin-bottom: var(--space-3); }
+  .direct-contact-card__body {
+    margin-inline: auto;
+    color: var(--text-on-cream-muted);
+  }
+  .direct-contact-card__email {
+    margin-top: var(--space-5);
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    max-width: none;
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+</style>

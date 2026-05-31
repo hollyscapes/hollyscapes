@@ -1,0 +1,44 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Publish on every push to main.
+  push:
+    branches: [main]
+  # Allow manual runs from the Actions tab.
+  workflow_dispatch:
+
+# Allow this workflow to publish to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; cancel any older queued runs.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Astro site
+        uses: withastro/action@v3
+        # Defaults: Node 22, npm install, npm run build, upload ./dist.
+        # If you ever switch package manager or move the project, pass:
+        #   package-manager: pnpm@latest
+        #   path: ./path-to-astro
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,118 @@
+---
+import { getEntry } from "astro:content";
+
+const site = await getEntry("site", "global");
+if (!site) throw new Error("Missing site/global.md content entry");
+
+const { title, nav } = site.data;
+
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isCurrent = (href: string) => {
+  const normalized = href.replace(/\/$/, "") || "/";
+  return normalized === currentPath;
+};
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="wordmark" href="/" aria-label={`${title} — home`}>
+      <span class="wordmark__text">{title}</span>
+    </a>
+    <nav class="primary-nav" aria-label="Primary">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={["nav-link", { "nav-link--current": isCurrent(item.href) }]}
+                aria-current={isCurrent(item.href) ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--surface-canvas);
+    color: var(--text-on-sage);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-block: var(--space-5);
+  }
+
+  .wordmark {
+    color: var(--text-on-sage);
+    text-decoration: none;
+    line-height: 1;
+  }
+  .wordmark__text {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.5rem, 1vw + 1.2rem, 1.9rem);
+    letter-spacing: -0.01em;
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+
+  .primary-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    justify-content: flex-end;
+  }
+
+  .nav-link {
+    color: var(--text-on-sage);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.98rem;
+    padding-block: var(--space-2);
+    position: relative;
+    transition: color 200ms ease;
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.15em;
+    height: 1px;
+    background: var(--cream-parchment);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 220ms ease;
+    opacity: 0.85;
+  }
+  .nav-link:hover { color: var(--cream-soft); }
+  .nav-link:hover::after,
+  .nav-link--current::after { transform: scaleX(1); }
+  .nav-link--current { color: var(--cream-soft); }
+
+  @media (max-width: 640px) {
+    .site-header__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding-block: var(--space-4);
+    }
+    .primary-nav ul {
+      gap: var(--space-4);
+      justify-content: flex-start;
+    }
+    .nav-link { font-size: 0.92rem; }
+  }
+</style>

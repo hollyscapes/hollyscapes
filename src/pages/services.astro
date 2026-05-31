@@ -1,0 +1,223 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import { getEntry } from "astro:content";
+
+const page = await getEntry("pages", "services");
+if (!page) throw new Error("Missing pages/services.md content entry");
+if (page.data.template !== "services")
+  throw new Error("pages/services.md must use template: services");
+
+const { hero, intro, services, expectations, closing_cta, draft } = page.data;
+---
+
+<Layout title="Services" draft={draft}>
+  <PageHero {...hero} />
+
+  {/* Intro — light sage band with a single floating cream card */}
+  {intro && (
+    <section class="band band--sage-light services-intro">
+      <div class="container services-intro__inner">
+        <article class="card services-intro__card">
+          {intro.heading && <h2>{intro.heading}</h2>}
+          <p>{intro.body}</p>
+        </article>
+      </div>
+    </section>
+  )}
+
+  {/* Services — sage band, three stacked floating cream cards with full detail */}
+  <section class="band band--sage services-list">
+    <div class="container">
+      <ul class="services-list__stack">
+        {services.map((s) => (
+          <li id={s.slug} class="card service-detail">
+            <div class="service-detail__head">
+              <h2>{s.title}</h2>
+              <p class="service-detail__tagline">{s.tagline}</p>
+            </div>
+
+            <div class="service-detail__body">
+              <div class="service-detail__prose">
+                {s.description.map((p) => <p>{p}</p>)}
+              </div>
+
+              <aside class="service-detail__aside">
+                {s.includes && s.includes.length > 0 && (
+                  <div class="service-detail__includes">
+                    <p class="aside-heading">What's included</p>
+                    <ul>
+                      {s.includes.map((item) => <li>{item}</li>)}
+                    </ul>
+                  </div>
+                )}
+
+                <div class="service-detail__price">
+                  <p class="aside-heading">Pricing</p>
+                  <p class="service-detail__price-label">{s.price_label}</p>
+                  {s.price_note && (
+                    <p class="service-detail__price-note">{s.price_note}</p>
+                  )}
+                </div>
+              </aside>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* Expectations — cream relief band */}
+  {expectations && (
+    <section class="band band--cream expectations">
+      <div class="container expectations__inner">
+        <header class="expectations__head">
+          {expectations.eyebrow && (
+            <span class="eyebrow">{expectations.eyebrow}</span>
+          )}
+          <h2>{expectations.heading}</h2>
+        </header>
+        <ol class="expectations__steps">
+          {expectations.steps.map((step) => (
+            <li class="expectation-step">
+              <h3>{step.title}</h3>
+              <p>{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  )}
+
+  <ClosingCta {...closing_cta} />
+</Layout>
+
+<style>
+  /* Intro */
+  .services-intro__inner { display: flex; justify-content: center; }
+  .services-intro__card { max-width: 44rem; text-align: left; }
+  .services-intro__card h2 { margin-bottom: var(--space-4); }
+  .services-intro__card p { font-size: 1.05rem; color: var(--text-on-cream); }
+
+  /* Services stack */
+  .services-list__stack {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  .service-detail {
+    scroll-margin-top: var(--space-7);
+  }
+  .service-detail__head { margin-bottom: var(--space-5); }
+  .service-detail__head h2 { color: var(--text-on-cream); }
+  .service-detail__tagline {
+    margin-top: var(--space-3);
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--text-on-cream-muted);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+    max-width: 50ch;
+  }
+  .service-detail__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(var(--space-5), 4vw, var(--space-7));
+    align-items: start;
+  }
+  .service-detail__prose p {
+    color: var(--text-on-cream);
+    margin-bottom: var(--space-4);
+  }
+  .service-detail__prose p:last-child { margin-bottom: 0; }
+
+  .service-detail__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-left: var(--space-5);
+    border-left: 1px solid rgba(63, 57, 47, 0.10);
+  }
+  .aside-heading {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-on-cream-muted);
+    margin-bottom: var(--space-3);
+  }
+  .service-detail__includes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .service-detail__includes li {
+    position: relative;
+    padding-left: var(--space-4);
+    color: var(--text-on-cream);
+    font-size: 0.95rem;
+  }
+  .service-detail__includes li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.65em;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--clay);
+    opacity: 0.7;
+  }
+  .service-detail__price-label {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--clay);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+  .service-detail__price-note {
+    margin-top: var(--space-2);
+    font-size: 0.9rem;
+    color: var(--text-on-cream-muted);
+  }
+
+  /* Expectations */
+  .expectations__head {
+    max-width: 38rem;
+    margin-inline: auto;
+    text-align: center;
+    margin-bottom: var(--space-7);
+  }
+  .expectations__steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+  .expectation-step h3 {
+    color: var(--text-on-cream);
+    margin-bottom: var(--space-3);
+    font-size: 1.25rem;
+  }
+  .expectation-step p { color: var(--text-on-cream-muted); }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    .service-detail__body { grid-template-columns: 1fr; }
+    .service-detail__aside {
+      padding-left: 0;
+      padding-top: var(--space-5);
+      border-left: 0;
+      border-top: 1px solid rgba(63, 57, 47, 0.10);
+    }
+    .expectations__steps { grid-template-columns: 1fr; }
+  }
+</style>

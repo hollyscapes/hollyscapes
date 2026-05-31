@@ -1,0 +1,184 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ClosingCta from "../../components/ClosingCta.astro";
+import BotanicalDivider from "../../components/BotanicalDivider.astro";
+import { getCollection, render, getEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("showcase", ({ data }) => !data.draft);
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const { title, location, year, summary, cover, photos, draft } = project.data;
+
+const sitePage = await getEntry("pages", "showcase");
+const closingCta = sitePage && sitePage.data.template === "showcase"
+  ? sitePage.data.closing_cta
+  : {
+      heading: "Want a garden like this?",
+      cta_label: "Get in touch",
+      cta_href: "/contact",
+    };
+---
+
+<Layout title={title} description={summary} draft={draft}>
+  {/* Hero — deep sage with project title */}
+  <section class="band band--sage-deep project-hero">
+    <div class="container project-hero__inner">
+      <p class="project-hero__crumb">
+        <a href="/showcase/">← Showcase</a>
+      </p>
+      <h1>{title}</h1>
+      <p class="project-hero__meta">
+        <span>{location}</span>
+        {year && <><span aria-hidden="true">·</span><span>{year}</span></>}
+      </p>
+    </div>
+  </section>
+
+  {/* Cover photo — light sage band with floating image frame */}
+  <section class="band band--sage-light project-cover">
+    <div class="container">
+      <figure class="project-cover__frame">
+        <img src={cover.image} alt={cover.alt} loading="eager" />
+      </figure>
+    </div>
+  </section>
+
+  {/* Summary + story body — cream relief */}
+  <section class="band band--cream project-story">
+    <div class="container project-story__inner">
+      <p class="project-story__summary">{summary}</p>
+      <div class="project-story__divider">
+        <BotanicalDivider color="var(--clay)" width={80} />
+      </div>
+      <div class="project-story__body prose">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  {/* Photo gallery — sage band, only if there are photos */}
+  {photos.length > 0 && (
+    <section class="band band--sage project-gallery">
+      <div class="container">
+        <ul class="project-gallery__list">
+          {photos.map((photo) => (
+            <li class="project-gallery__item">
+              <figure>
+                <div class="project-gallery__frame">
+                  <img src={photo.image} alt={photo.alt} loading="lazy" />
+                </div>
+                {photo.caption && (
+                  <figcaption>{photo.caption}</figcaption>
+                )}
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  <ClosingCta {...closingCta} />
+</Layout>
+
+<style>
+  /* Hero */
+  .project-hero { padding-block: clamp(var(--space-7), 8vw, var(--space-8)); text-align: center; }
+  .project-hero__crumb { max-width: none; margin-bottom: var(--space-4); }
+  .project-hero__crumb a {
+    color: var(--text-on-sage-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+  }
+  .project-hero__crumb a:hover { color: var(--cream-parchment); }
+  .project-hero h1 {
+    color: var(--cream-parchment);
+    max-width: 22ch;
+    margin-inline: auto;
+    font-size: clamp(2rem, 3vw + 1rem, 3rem);
+  }
+  .project-hero__meta {
+    margin-top: var(--space-3);
+    color: var(--text-on-sage-muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    max-width: none;
+  }
+
+  /* Cover */
+  .project-cover__frame {
+    margin: 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: var(--sage-light);
+    box-shadow: var(--shadow-soft);
+    max-width: 900px;
+    margin-inline: auto;
+  }
+  .project-cover__frame img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Story */
+  .project-story__inner { max-width: 38rem; margin-inline: auto; }
+  .project-story__summary {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 1.2vw + 1rem, 1.5rem);
+    line-height: 1.4;
+    color: var(--text-on-cream);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+    max-width: none;
+  }
+  .project-story__divider {
+    margin-block: var(--space-6);
+    text-align: center;
+    opacity: 0.65;
+  }
+  .prose :global(p) {
+    margin-bottom: var(--space-4);
+    color: var(--text-on-cream);
+    font-size: 1.05rem;
+  }
+  .prose :global(p:last-child) { margin-bottom: 0; }
+  .prose :global(em) { font-style: italic; }
+
+  /* Gallery */
+  .project-gallery__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .project-gallery__item figure { margin: 0; }
+  .project-gallery__frame {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--sage-light);
+    box-shadow: var(--shadow-soft);
+  }
+  .project-gallery__frame img { width: 100%; height: 100%; object-fit: cover; }
+  .project-gallery__item figcaption {
+    margin-top: var(--space-3);
+    font-size: 0.92rem;
+    font-style: italic;
+    color: var(--text-on-sage);
+    max-width: 50ch;
+  }
+
+  @media (max-width: 720px) {
+    .project-gallery__list { grid-template-columns: 1fr; }
+  }
+</style>

@@ -1,0 +1,138 @@
+---
+import Layout from "../layouts/Layout.astro";
+import PageHero from "../components/PageHero.astro";
+import ClosingCta from "../components/ClosingCta.astro";
+import { getEntry, getCollection } from "astro:content";
+
+const page = await getEntry("pages", "showcase");
+if (!page) throw new Error("Missing pages/showcase.md content entry");
+if (page.data.template !== "showcase")
+  throw new Error("pages/showcase.md must use template: showcase");
+
+const { hero, intro, closing_cta, draft } = page.data;
+
+const projects = (await getCollection("showcase", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.order - a.data.order);
+---
+
+<Layout title="Showcase" draft={draft}>
+  <PageHero {...hero} />
+
+  {intro && (
+    <section class="band band--sage-light showcase-intro">
+      <div class="container showcase-intro__inner">
+        <article class="card">
+          {intro.heading && <h2>{intro.heading}</h2>}
+          <p>{intro.body}</p>
+        </article>
+      </div>
+    </section>
+  )}
+
+  <section class="band band--cream showcase-grid">
+    <div class="container">
+      {projects.length === 0 ? (
+        <p class="showcase-grid__empty">No projects yet — Holly will add some soon.</p>
+      ) : (
+        <ul class="showcase-grid__list">
+          {projects.map((project) => (
+            <li class="showcase-grid__item">
+              <a class="project-card" href={`/showcase/${project.id}/`}>
+                <div class="project-card__frame">
+                  <img
+                    src={project.data.cover.image}
+                    alt={project.data.cover.alt}
+                    loading="lazy"
+                  />
+                </div>
+                <div class="project-card__meta">
+                  <p class="project-card__title">{project.data.title}</p>
+                  <p class="project-card__location">
+                    {project.data.location}
+                    {project.data.year && <> · {project.data.year}</>}
+                  </p>
+                  <p class="project-card__summary">{project.data.summary}</p>
+                  <span class="link-arrow project-card__more">
+                    See the garden
+                    <span aria-hidden="true">→</span>
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+
+  <ClosingCta {...closing_cta} />
+</Layout>
+
+<style>
+  .showcase-intro__inner { display: flex; justify-content: center; }
+  .showcase-intro__inner .card { max-width: 44rem; }
+  .showcase-intro__inner h2 { margin-bottom: var(--space-4); }
+
+  .showcase-grid__empty {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-on-cream-muted);
+    max-width: none;
+  }
+
+  .showcase-grid__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-7) var(--space-6);
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+  }
+  .project-card__frame {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--sage-light);
+    box-shadow: var(--shadow-soft);
+  }
+  .project-card__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+  }
+  .project-card:hover .project-card__frame img { transform: scale(1.025); }
+
+  .project-card__meta { margin-top: var(--space-4); }
+  .project-card__title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--text-on-cream);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+  .project-card__location {
+    margin-top: var(--space-1);
+    font-size: 0.92rem;
+    color: var(--text-on-cream-muted);
+    letter-spacing: 0.02em;
+  }
+  .project-card__summary {
+    margin-top: var(--space-3);
+    color: var(--text-on-cream);
+  }
+  .project-card__more {
+    margin-top: var(--space-3);
+    display: inline-flex;
+  }
+
+  @media (max-width: 720px) {
+    .showcase-grid__list { grid-template-columns: 1fr; gap: var(--space-7); }
+  }
+</style>

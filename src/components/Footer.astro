@@ -1,0 +1,131 @@
+---
+import { getEntry } from "astro:content";
+import BotanicalDivider from "./BotanicalDivider.astro";
+
+const site = await getEntry("site", "global");
+if (!site) throw new Error("Missing site/global.md content entry");
+
+const { title, nav, footer, contact_email } = site.data;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container site-footer__inner">
+    <div class="site-footer__divider">
+      <BotanicalDivider color="var(--cream-parchment)" width={120} />
+    </div>
+
+    <div class="site-footer__grid">
+      <div class="site-footer__col">
+        <p class="wordmark wordmark--footer">{title}</p>
+        <p class="tagline">{footer.tagline}</p>
+      </div>
+
+      <nav class="site-footer__col" aria-label="Footer">
+        <p class="col-heading">Explore</p>
+        <ul>
+          {nav.map((item) => (
+            <li><a href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="site-footer__col">
+        <p class="col-heading">Reach Holly</p>
+        <p>
+          <a href={`mailto:${contact_email}`}>{contact_email}</a>
+        </p>
+        <p class="muted">Replies come from Holly herself, usually within a day or two.</p>
+      </div>
+    </div>
+
+    <p class="site-footer__signoff">
+      <span>{footer.signoff}</span>
+      <span aria-hidden="true">·</span>
+      <span>&copy; {year} {title}</span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--surface-canvas-deep);
+    color: var(--text-on-sage);
+    padding-block: var(--space-8) var(--space-6);
+  }
+
+  .site-footer__divider {
+    text-align: center;
+    opacity: 0.7;
+    margin-bottom: var(--space-7);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1.2fr;
+    gap: var(--space-7);
+  }
+
+  .site-footer__col p { max-width: 32ch; }
+
+  .wordmark--footer {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.6rem;
+    margin-bottom: var(--space-3);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+
+  .tagline { color: var(--text-on-sage-muted); }
+
+  .col-heading {
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-on-sage-muted);
+    margin-bottom: var(--space-3);
+  }
+
+  .site-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .site-footer a {
+    color: var(--text-on-sage);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease, color 200ms ease;
+  }
+  .site-footer a:hover {
+    color: var(--cream-soft);
+    border-bottom-color: rgba(247, 243, 234, 0.55);
+  }
+
+  .muted { color: var(--text-on-sage-muted); font-size: 0.92rem; margin-top: var(--space-2); }
+
+  .site-footer__signoff {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid rgba(247, 243, 234, 0.18);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    color: var(--text-on-sage-muted);
+    font-size: 0.9rem;
+    max-width: none;
+  }
+
+  @media (max-width: 760px) {
+    .site-footer__grid {
+      grid-template-columns: 1fr;
+      gap: var(--space-6);
+    }
+  }
+</style>

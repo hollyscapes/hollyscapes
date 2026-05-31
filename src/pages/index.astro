@@ -1,0 +1,273 @@
+---
+import Layout from "../layouts/Layout.astro";
+import BotanicalDivider from "../components/BotanicalDivider.astro";
+import { getEntry } from "astro:content";
+
+const page = await getEntry("pages", "home");
+if (!page) throw new Error("Missing pages/home.md content entry");
+
+const { hero, welcome, services_glimpse, showcase_glimpse, closing_cta, draft } =
+  page.data;
+---
+
+<Layout draft={draft}>
+  {/* 1. Hero — deep sage band. First viewport reads green. */}
+  <section class="band band--sage-deep hero">
+    <div class="container hero__inner">
+      {hero.eyebrow && <span class="eyebrow hero__eyebrow">{hero.eyebrow}</span>}
+      <h1 class="hero__headline">{hero.headline}</h1>
+      {hero.subhead && <p class="hero__subhead">{hero.subhead}</p>}
+      <p class="hero__cta">
+        <a class="button" href={hero.cta_href}>
+          {hero.cta_label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+      <div class="hero__divider">
+        <BotanicalDivider color="var(--cream-parchment)" width={140} />
+      </div>
+    </div>
+  </section>
+
+  {/* 2. Welcome — light sage band, floating soft-white card. */}
+  <section class="band band--sage-light welcome">
+    <div class="container welcome__inner">
+      <article class="card welcome__card">
+        {welcome.eyebrow && <span class="eyebrow">{welcome.eyebrow}</span>}
+        <h2>{welcome.heading}</h2>
+        <p class="welcome__body">{welcome.body}</p>
+        {welcome.signoff && <p class="welcome__signoff">{welcome.signoff}</p>}
+      </article>
+    </div>
+  </section>
+
+  {/* 3. Services glimpse — sage field band, three floating cream cards. */}
+  <section class="band band--sage services">
+    <div class="container services__inner">
+      <header class="services__head">
+        {services_glimpse.eyebrow && (
+          <span class="eyebrow">{services_glimpse.eyebrow}</span>
+        )}
+        <h2>{services_glimpse.heading}</h2>
+        {services_glimpse.intro && (
+          <p class="services__intro">{services_glimpse.intro}</p>
+        )}
+      </header>
+
+      <ul class="services__grid">
+        {services_glimpse.items.map((item) => (
+          <li class="card service-card">
+            <h3>{item.title}</h3>
+            <p>{item.blurb}</p>
+          </li>
+        ))}
+      </ul>
+
+      <p class="services__more">
+        <a class="link-arrow" href={services_glimpse.link_href}>
+          {services_glimpse.link_label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  {/* 4. Showcase glimpse — cream parchment relief band. Only cream-dominant section. */}
+  <section class="band band--cream showcase">
+    <div class="container showcase__inner">
+      <header class="showcase__head">
+        {showcase_glimpse.eyebrow && (
+          <span class="eyebrow">{showcase_glimpse.eyebrow}</span>
+        )}
+        <h2>{showcase_glimpse.heading}</h2>
+        {showcase_glimpse.intro && (
+          <p class="showcase__intro">{showcase_glimpse.intro}</p>
+        )}
+      </header>
+
+      <ul class="showcase__grid">
+        {showcase_glimpse.tiles.map((tile) => (
+          <li class="showcase-tile">
+            <figure>
+              <div class="showcase-tile__frame">
+                <img src={tile.image} alt={tile.alt} loading="lazy" />
+              </div>
+              <figcaption>
+                <p class="showcase-tile__title">{tile.title}</p>
+                {tile.location && (
+                  <p class="showcase-tile__location">{tile.location}</p>
+                )}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+
+      <p class="showcase__more">
+        <a class="link-arrow" href={showcase_glimpse.link_href}>
+          {showcase_glimpse.link_label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </div>
+  </section>
+
+  {/* 5. Closing CTA — deep sage band. Returns the page to green before the footer. */}
+  <section class="band band--sage-deep closing">
+    <div class="container closing__inner">
+      <h2>{closing_cta.heading}</h2>
+      {closing_cta.body && <p class="closing__body">{closing_cta.body}</p>}
+      <p class="closing__cta">
+        <a class="button" href={closing_cta.cta_href}>
+          {closing_cta.cta_label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Hero */
+  .hero {
+    padding-block: clamp(var(--space-9), 14vw, var(--space-10));
+    text-align: center;
+  }
+  .hero__inner { max-width: 56rem; margin-inline: auto; }
+  .hero__eyebrow { color: var(--text-on-sage-muted); }
+  .hero__headline {
+    margin-top: var(--space-3);
+    color: var(--cream-parchment);
+    max-width: 18ch;
+    margin-inline: auto;
+  }
+  .hero__subhead {
+    margin-top: var(--space-5);
+    margin-inline: auto;
+    color: var(--text-on-sage);
+    font-size: clamp(1.05rem, 0.6vw + 1rem, 1.25rem);
+    max-width: 38ch;
+  }
+  .hero__cta { margin-top: var(--space-6); max-width: none; }
+  .hero__divider { margin-top: var(--space-7); opacity: 0.7; }
+
+  /* Welcome */
+  .welcome__inner { display: flex; justify-content: center; }
+  .welcome__card {
+    max-width: 38rem;
+    text-align: left;
+  }
+  .welcome__card h2 { margin-top: var(--space-2); }
+  .welcome__body {
+    margin-top: var(--space-4);
+    font-size: 1.08rem;
+    color: var(--text-on-cream);
+  }
+  .welcome__signoff {
+    margin-top: var(--space-5);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--text-on-cream-muted);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+
+  /* Services */
+  .services__head {
+    max-width: 38rem;
+    margin-inline: auto;
+    text-align: center;
+    margin-bottom: var(--space-7);
+    color: var(--text-on-sage);
+  }
+  .services__head h2 { color: var(--cream-parchment); }
+  .services__head .eyebrow { color: var(--text-on-sage-muted); }
+  .services__intro { margin-top: var(--space-3); margin-inline: auto; color: var(--text-on-sage); }
+  .services__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .service-card h3 {
+    color: var(--text-on-cream);
+    margin-bottom: var(--space-3);
+  }
+  .service-card p {
+    color: var(--text-on-cream-muted);
+    font-size: 0.98rem;
+  }
+  .services__more {
+    margin-top: var(--space-7);
+    text-align: center;
+    max-width: none;
+  }
+
+  /* Showcase */
+  .showcase__head {
+    max-width: 38rem;
+    margin-inline: auto;
+    text-align: center;
+    margin-bottom: var(--space-7);
+  }
+  .showcase__intro { margin-top: var(--space-3); margin-inline: auto; color: var(--text-on-cream-muted); }
+  .showcase__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-6);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .showcase-tile figure { margin: 0; }
+  .showcase-tile__frame {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    background: var(--sage-light);
+    box-shadow: var(--shadow-soft);
+  }
+  .showcase-tile__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 600ms ease;
+  }
+  .showcase-tile:hover .showcase-tile__frame img { transform: scale(1.02); }
+  .showcase-tile figcaption { margin-top: var(--space-4); }
+  .showcase-tile__title {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--text-on-cream);
+    font-variation-settings: "SOFT" 100, "opsz" 144;
+  }
+  .showcase-tile__location {
+    margin-top: var(--space-1);
+    font-size: 0.9rem;
+    color: var(--text-on-cream-muted);
+  }
+  .showcase__more { margin-top: var(--space-7); text-align: center; max-width: none; }
+
+  /* Closing CTA */
+  .closing { text-align: center; }
+  .closing__inner { max-width: 44rem; margin-inline: auto; }
+  .closing h2 { color: var(--cream-parchment); }
+  .closing__body {
+    margin-top: var(--space-4);
+    margin-inline: auto;
+    color: var(--text-on-sage);
+    font-size: 1.08rem;
+  }
+  .closing__cta { margin-top: var(--space-6); max-width: none; }
+
+  /* Responsive */
+  @media (max-width: 880px) {
+    .services__grid { grid-template-columns: 1fr; }
+    .showcase__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 560px) {
+    .showcase__grid { grid-template-columns: 1fr; }
+    .hero { padding-block: var(--space-9) var(--space-8); }
+  }
+</style>

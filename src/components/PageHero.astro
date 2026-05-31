@@ -1,0 +1,59 @@
+---
+interface Props {
+  eyebrow?: string;
+  headline: string;
+  subhead?: string;
+  cta_label?: string;
+  cta_href?: string;
+  align?: "center" | "left";
+}
+const {
+  eyebrow,
+  headline,
+  subhead,
+  cta_label,
+  cta_href,
+  align = "center",
+} = Astro.props;
+---
+
+<section class="band band--sage-deep page-hero" data-align={align}>
+  <div class="container page-hero__inner">
+    {eyebrow && <span class="eyebrow page-hero__eyebrow">{eyebrow}</span>}
+    <h1 class="page-hero__headline">{headline}</h1>
+    {subhead && <p class="page-hero__subhead">{subhead}</p>}
+    {cta_label && cta_href && (
+      <p class="page-hero__cta">
+        <a class="button" href={cta_href}>
+          {cta_label}
+          <span aria-hidden="true">→</span>
+        </a>
+      </p>
+    )}
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    padding-block: clamp(var(--space-8), 10vw, var(--space-9));
+  }
+  .page-hero[data-align="center"] { text-align: center; }
+  .page-hero[data-align="center"] .page-hero__inner { max-width: 52rem; margin-inline: auto; }
+  .page-hero[data-align="center"] .page-hero__headline,
+  .page-hero[data-align="center"] .page-hero__subhead { margin-inline: auto; }
+
+  .page-hero__eyebrow { color: var(--text-on-sage-muted); }
+  .page-hero__headline {
+    margin-top: var(--space-3);
+    color: var(--cream-parchment);
+    max-width: 22ch;
+    font-size: clamp(2rem, 3.5vw + 1rem, 3.5rem);
+  }
+  .page-hero__subhead {
+    margin-top: var(--space-5);
+    color: var(--text-on-sage);
+    font-size: clamp(1.05rem, 0.5vw + 1rem, 1.2rem);
+    max-width: 42ch;
+  }
+  .page-hero__cta { margin-top: var(--space-6); max-width: none; }
+</style>

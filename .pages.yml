@@ -1,0 +1,344 @@
+# Pages CMS configuration for Hollyscapes
+# https://pagescms.org/docs
+#
+# This file tells Pages CMS what Holly can edit. Each `content` entry
+# becomes a section in the CMS sidebar. Drag-and-drop image upload is
+# enabled via the `media` block at the bottom.
+
+media:
+  input: public/images
+  output: /images
+
+content:
+  # ----------------------------------------------------------------
+  # Site-wide settings — header, footer, contact email
+  # ----------------------------------------------------------------
+  - name: site
+    label: "Site settings"
+    description: "Site title, navigation, footer, and Holly's contact email — appears on every page."
+    type: file
+    path: src/content/site/global.md
+    fields:
+      - { name: title, label: "Site title", type: string, required: true }
+      - { name: description, label: "Site description", type: text, description: "Used for SEO and social shares." }
+      - { name: contact_email, label: "Contact email", type: string, required: true }
+      - name: nav
+        label: "Top navigation"
+        type: object
+        list: true
+        fields:
+          - { name: label, label: "Label", type: string, required: true }
+          - { name: href, label: "Link", type: string, required: true }
+      - name: footer
+        label: "Footer"
+        type: object
+        fields:
+          - { name: tagline, label: "Tagline", type: string }
+          - { name: signoff, label: "Sign-off line", type: string }
+
+  # ----------------------------------------------------------------
+  # Home page
+  # ----------------------------------------------------------------
+  - name: home
+    label: "Home page"
+    description: "The landing page. Hero, welcome, services glimpse, showcase glimpse, and closing call to action."
+    type: file
+    path: src/content/pages/home.md
+    fields:
+      - { name: template, label: "Template (do not change)", type: string, hidden: true, default: home }
+      - { name: draft, label: "Draft copy?", type: boolean, description: "Tick while sentences are still stand-ins. A small badge appears in dev so you know which pages need real words." }
+      - name: hero
+        label: "Hero (top of page)"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: headline, label: "Headline", type: string, required: true }
+          - { name: subhead, label: "Subhead", type: text }
+          - { name: cta_label, label: "Button label", type: string, required: true }
+          - { name: cta_href, label: "Button link", type: string, required: true }
+      - name: welcome
+        label: "Welcome card"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text, required: true }
+          - { name: signoff, label: "Sign-off (e.g. — Holly)", type: string }
+      - name: services_glimpse
+        label: "Services glimpse"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: intro, label: "Intro", type: text }
+          - name: items
+            label: "Three services to highlight"
+            type: object
+            list: { min: 1, max: 4 }
+            fields:
+              - { name: title, label: "Service title", type: string, required: true }
+              - { name: blurb, label: "One-line blurb", type: string, required: true }
+          - { name: link_label, label: "Link label", type: string, required: true }
+          - { name: link_href, label: "Link target", type: string, required: true }
+      - name: showcase_glimpse
+        label: "Showcase glimpse"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: intro, label: "Intro", type: text }
+          - name: tiles
+            label: "Featured projects (image tiles)"
+            type: object
+            list: true
+            fields:
+              - { name: title, label: "Title", type: string, required: true }
+              - { name: location, label: "Location", type: string }
+              - { name: image, label: "Photo", type: image, required: true }
+              - { name: alt, label: "Alt text (described for accessibility)", type: string, required: true }
+          - { name: link_label, label: "Link label", type: string, required: true }
+          - { name: link_href, label: "Link target", type: string, required: true }
+      - name: closing_cta
+        label: "Closing call to action"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text }
+          - { name: cta_label, label: "Button label", type: string, required: true }
+          - { name: cta_href, label: "Button link", type: string, required: true }
+
+  # ----------------------------------------------------------------
+  # About page
+  # ----------------------------------------------------------------
+  - name: about
+    label: "About page"
+    description: "Holly's story, portrait, and the principles that guide her work."
+    type: file
+    path: src/content/pages/about.md
+    fields:
+      - { name: template, label: "Template (do not change)", type: string, hidden: true, default: about }
+      - { name: draft, label: "Draft copy?", type: boolean }
+      - name: hero
+        label: "Hero"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: headline, label: "Headline", type: string, required: true }
+          - { name: subhead, label: "Subhead", type: text }
+      - name: portrait
+        label: "Portrait photo (optional)"
+        type: object
+        fields:
+          - { name: image, label: "Photo", type: image }
+          - { name: alt, label: "Alt text", type: string }
+          - { name: caption, label: "Caption", type: string }
+      - name: story
+        label: "Story"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - name: paragraphs
+            label: "Paragraphs"
+            type: text
+            list: true
+      - name: philosophy
+        label: "Philosophy / principles"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: intro, label: "Intro", type: text }
+          - name: principles
+            label: "Principles"
+            type: object
+            list: true
+            fields:
+              - { name: title, label: "Title", type: string, required: true }
+              - { name: body, label: "Body", type: text, required: true }
+      - name: closing_cta
+        label: "Closing call to action"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text }
+          - { name: cta_label, label: "Button label", type: string, required: true }
+          - { name: cta_href, label: "Button link", type: string, required: true }
+
+  # ----------------------------------------------------------------
+  # Services page
+  # ----------------------------------------------------------------
+  - name: services
+    label: "Services page"
+    description: "The three services, pricing, what to expect, and a closing CTA."
+    type: file
+    path: src/content/pages/services.md
+    fields:
+      - { name: template, label: "Template (do not change)", type: string, hidden: true, default: services }
+      - { name: draft, label: "Draft copy?", type: boolean }
+      - name: hero
+        label: "Hero"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: headline, label: "Headline", type: string, required: true }
+          - { name: subhead, label: "Subhead", type: text }
+      - name: intro
+        label: "Intro"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string }
+          - { name: body, label: "Body", type: text, required: true }
+      - name: services
+        label: "Services"
+        description: "Each one becomes a detailed block on the page."
+        type: object
+        list: true
+        fields:
+          - { name: slug, label: "Slug (used for anchor links, e.g. 'design')", type: string, required: true }
+          - { name: title, label: "Service title", type: string, required: true }
+          - { name: tagline, label: "Tagline", type: string, required: true }
+          - name: description
+            label: "Description paragraphs"
+            type: text
+            list: true
+          - name: includes
+            label: "What's included (bulleted)"
+            type: string
+            list: true
+          - { name: price_label, label: "Price label (e.g. 'Starting at $1,200')", type: string, required: true }
+          - { name: price_note, label: "Price note (small print)", type: text }
+      - name: expectations
+        label: "What to expect (steps)"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: heading, label: "Heading", type: string, required: true }
+          - name: steps
+            label: "Steps"
+            type: object
+            list: true
+            fields:
+              - { name: title, label: "Step title", type: string, required: true }
+              - { name: body, label: "Step body", type: text, required: true }
+      - name: closing_cta
+        label: "Closing call to action"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text }
+          - { name: cta_label, label: "Button label", type: string, required: true }
+          - { name: cta_href, label: "Button link", type: string, required: true }
+
+  # ----------------------------------------------------------------
+  # Showcase page (intro + closing CTA — projects below are separate)
+  # ----------------------------------------------------------------
+  - name: showcase-page
+    label: "Showcase page (intro & CTA)"
+    description: "The hero, short intro, and closing CTA on the Showcase page. The projects themselves are managed in the Showcase projects section below."
+    type: file
+    path: src/content/pages/showcase.md
+    fields:
+      - { name: template, label: "Template (do not change)", type: string, hidden: true, default: showcase }
+      - { name: draft, label: "Draft copy?", type: boolean }
+      - name: hero
+        label: "Hero"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: headline, label: "Headline", type: string, required: true }
+          - { name: subhead, label: "Subhead", type: text }
+      - name: intro
+        label: "Intro"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string }
+          - { name: body, label: "Body", type: text, required: true }
+      - name: closing_cta
+        label: "Closing call to action"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text }
+          - { name: cta_label, label: "Button label", type: string, required: true }
+          - { name: cta_href, label: "Button link", type: string, required: true }
+
+  # ----------------------------------------------------------------
+  # Showcase projects — Holly adds one of these per project
+  # ----------------------------------------------------------------
+  - name: showcase
+    label: "Showcase projects"
+    description: "Each project becomes its own page in the showcase. Drag photos in directly. Higher order numbers appear first."
+    type: collection
+    path: src/content/showcase
+    filename: "{fields.title | kebabCase}.md"
+    view:
+      fields: [title, location, year, order, draft]
+      primary: title
+      sort: [order, year, title]
+      default:
+        sort: order
+        order: desc
+    fields:
+      - { name: title, label: "Project title", type: string, required: true }
+      - { name: location, label: "Location (town, NJ)", type: string, required: true }
+      - { name: year, label: "Year completed", type: number }
+      - { name: order, label: "Display order (higher = earlier on the page)", type: number, default: 0 }
+      - { name: draft, label: "Draft (hide from the public site)", type: boolean, default: false }
+      - { name: summary, label: "Short summary (one or two sentences)", type: text, required: true }
+      - name: cover
+        label: "Cover photo"
+        type: object
+        fields:
+          - { name: image, label: "Photo", type: image, required: true }
+          - { name: alt, label: "Alt text", type: string, required: true }
+      - name: photos
+        label: "Additional photos"
+        type: object
+        list: true
+        fields:
+          - { name: image, label: "Photo", type: image, required: true }
+          - { name: alt, label: "Alt text", type: string, required: true }
+          - { name: caption, label: "Caption (optional)", type: text }
+      - { name: body, label: "Project story (markdown)", type: rich-text }
+
+  # ----------------------------------------------------------------
+  # Contact page
+  # ----------------------------------------------------------------
+  - name: contact
+    label: "Contact page"
+    description: "The contact form, success message, and direct email block."
+    type: file
+    path: src/content/pages/contact.md
+    fields:
+      - { name: template, label: "Template (do not change)", type: string, hidden: true, default: contact }
+      - { name: draft, label: "Draft copy?", type: boolean }
+      - name: hero
+        label: "Hero"
+        type: object
+        fields:
+          - { name: eyebrow, label: "Eyebrow label", type: string }
+          - { name: headline, label: "Headline", type: string, required: true }
+          - { name: subhead, label: "Subhead", type: text }
+      - name: intro
+        label: "Intro (above the form)"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string }
+          - { name: body, label: "Body", type: text, required: true }
+      - name: form
+        label: "Form settings"
+        type: object
+        fields:
+          - { name: formspree_endpoint, label: "Formspree endpoint URL", type: string, required: true, description: "Paste the URL Formspree gives you when you create your form (looks like https://formspree.io/f/abc123). Until you do, the form shows a friendly notice instead of submitting." }
+          - { name: submit_label, label: "Submit button label", type: string }
+          - { name: success_message, label: "Success message", type: text, required: true }
+          - { name: name_label, label: "Name field label", type: string }
+          - { name: email_label, label: "Email field label", type: string }
+          - { name: message_label, label: "Message field label", type: string }
+      - name: direct_contact
+        label: "Direct contact card"
+        type: object
+        fields:
+          - { name: heading, label: "Heading", type: string, required: true }
+          - { name: body, label: "Body", type: text, required: true }
