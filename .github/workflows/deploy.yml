@@ -27,8 +27,11 @@ jobs:
 
       - name: Build Astro site
         uses: withastro/action@v3
-        # Defaults: Node 22, npm install, npm run build, upload ./dist.
-        # If you ever switch package manager or move the project, pass:
+        with:
+          # Astro 6 requires Node >=22.12; the action otherwise defaults to
+          # Node 20, which fails the build. Pin a supported major.
+          node-version: 22
+        # If you ever switch package manager or move the project, also pass:
         #   package-manager: pnpm@latest
         #   path: ./path-to-astro
 
